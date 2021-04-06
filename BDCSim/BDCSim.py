@@ -131,7 +131,19 @@ class Simulator:
                 temp_frames['route'] = route
                 selected_df_list.append(temp_frames)
                 if not arcpy.Exists(bb_output):
-                    arcpy.CopyFeatures_management(in_features="in_memory/{}_bounding_box".format(bounding_box), out_feature_class=os.path.join(self.out_gdb, "pid_{}_route_{}_{}_bounding_box".format(pid, route, bounding_box)))
+
+                    arcpy.CopyFeatures_management(in_features="in_memory/{}_bounding_box".format(bounding_box),
+                                                  out_feature_class=os.path.join(self.out_gdb,
+                                                  "pid_{}_route_{}_{}_bounding_box".format(pid, route, bounding_box)))
+                try:
+                    arcpy.FeaturesToJSON_conversion(
+                        "in_memory/{}_bounding_box".format(bounding_box),
+                        os.path.join(self.output_folder,'csv',"{}_bounding_box".format(bounding_box)), geoJSON=True)
+
+
+                except Exception as e:
+                    print(e)
+                    arcpy.Delete_management(os.path.join(self.output_folder,'csv',"{}_bounding_box.geojson".format(bounding_box)))
 
                 arcpy.Delete_management('in_memory/{}_bounding_box'.format(bounding_box))
                 arcpy.Delete_management("in_memory/temp_points_selections")
